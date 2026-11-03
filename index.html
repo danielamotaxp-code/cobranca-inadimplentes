@@ -52,6 +52,7 @@ const KEY="cobranca_chave_"+DADOS.v;
 async function abrir(raw){
   const k=await crypto.subtle.importKey("raw",raw,"AES-GCM",false,["decrypt"]);
   const html=dec.decode(await crypto.subtle.decrypt({name:"AES-GCM",iv:b64(DADOS.iv)},k,b64(DADOS.app)));
+  if(document.readyState!=="complete")await new Promise(r=>addEventListener("load",r,{once:true}));
   document.open();document.write(html);document.close();
 }
 async function entrar(login,senha){
@@ -70,7 +71,7 @@ function guardar(raw,longo){
 (async()=>{
   let v=null;
   try{v=sessionStorage.getItem(KEY)||localStorage.getItem(KEY)}catch(e){}
-  if(v){try{await abrir(b64(v));return}catch(e){try{sessionStorage.removeItem(KEY);localStorage.removeItem(KEY)}catch(x){}}}
+  if(v){document.documentElement.style.visibility="hidden";try{await abrir(b64(v));return}catch(e){document.documentElement.style.visibility="";try{sessionStorage.removeItem(KEY);localStorage.removeItem(KEY)}catch(x){}}}
 })();
 document.getElementById("f").addEventListener("submit",async e=>{
   e.preventDefault();
