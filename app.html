@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<title>Cobrança Inadimplentes</title>
+<script src="/central-atendimento/kit/modulo.js" data-modulo="cobranca"></script>
+<style>body{margin:0;font:15px/1.5 "Segoe UI",system-ui,sans-serif;color:#4d5b6b;display:grid;place-items:center;min-height:90vh}</style>
+</head>
+<body>
+<p id="m">Abrindo a Cobrança…</p>
+<script>
+/* A Cobrança fica no repositório privado cobranca-acessos (tem os links das planilhas dos clientes).
+   Ela só é carregada depois do login no portal, com o token de lá. */
+(async function () {
+  var P = window.PLAT; if (!P) return;
+  try {
+    var r = await fetch('https://api.github.com/repos/danielamotaxp-code/cobranca-acessos/contents/app.html?t=' + Date.now(), {
+      cache: 'no-store', headers: { Authorization: 'Bearer ' + P.token, Accept: 'application/vnd.github.raw+json', 'X-GitHub-Api-Version': '2022-11-28' } });
+    if (!r.ok) throw new Error(r.status === 401 ? 'o token do portal venceu (a administradora troca em Administração)' : 'erro ' + r.status);
+    var html = await r.text();
+    var extra = '<script>window.PLAT=parent.PlataformaAtual;document.documentElement.classList.add("plat-embutido");<\/script>';
+    html = html.replace(/<head[^>]*>/i, function (m) { return m + extra; });
+    document.open(); document.write(html); document.close();
+  } catch (e) { document.getElementById('m').textContent = 'Não foi possível abrir a Cobrança: ' + e.message + '.'; }
+})();
+</script>
+</body>
+</html>
